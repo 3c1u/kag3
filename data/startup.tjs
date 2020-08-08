@@ -1,6 +1,9 @@
 // startup.tjs - スタートアップスクリプト
 // Copyright (C) 2001, W.Dee  改変・配布は自由です
 
+// パッチを当てておく
+Scripts.execStorage("patch/Main.tjs");
+
 @if (kirikiriz)
 property _dummyProp { getter {} setter (v) {} }
 with(Window) {
@@ -11,11 +14,6 @@ Plugins.link("menu.dll");
 Plugins.link("KAGParser.dll");
 @endif
 
-// Load MenuItem stub
-if (typeof(global.MenuItem) !== "Object")
-{
-	Scripts.execStorage("MenuItem_stub.tjs");
-}
 // Load font and set it as default
 if (typeof(global.Font) === "Object" && typeof(global.Font.addFont) === "Object")
 {

@@ -1,0 +1,99 @@
+﻿/**
+ * @file     ScriptsEx.tjs
+ * @author   Hikaru Terazono <3c1u@vulpesgames.tokyo>
+ * @brief    The implementation of Scripts plugin.
+ *
+ * @copyright Copyright (c) 2020 Hikaru Terazono (3c1u).
+ */
+
+// Scripts.foreach(obj, func, args)
+function _forEachStub (array, f, v*) {
+    if (array instanceof "Array") {
+        for (var i = 0; i < array.count; ++i) {
+            f(i, array[i], v*) incontextof this;
+        }
+    } else {
+        var keys = Scripts.getObjectKeys(array);
+        for (var i = 0; i < keys.count; ++i) {
+            f(keys[i], array[keys[i]], v*) incontextof this;
+        }
+    }
+}
+
+// Scripts.clone(obj)
+function _cloneStub(obj) {
+    if (typeof obj != "Object") {
+        return obj;
+    }
+
+    if (obj instanceof "Array") {
+        var newArray = new Array();
+        for (var i = 0; i < obj.count; ++i) {
+            newArray[i] = _cloneStub(obj[i]);
+        }
+        return newArray;
+    } else if (obj instanceof "Dictionary") {
+        var newDict = new Dictionary();
+        var keys = Scripts.getObjectKeys(obj);
+        for (var i = 0; i < keys.count; ++i) {
+            var key = keys[i];
+            newDict[key] = _cloneStub(obj[key]);
+        }
+        return newDict;
+    } else {
+        try {
+            return obj.clone();
+        } catch (e) {
+            throw "failed to clone object";
+        }
+    }
+}
+
+// Scripts.equalStruct(arg1, arg2)
+function _equalStructStub(arg1, arg2) {
+    if (arg1 == arg2)
+        return true;
+    
+    if (arg1 instanceof "Function" && arg2 instanceof "Function") {
+        return arg1 == arg2;
+    } else if (arg1 instanceof "Array" && arg2 instanceof "Array") {
+        if (arg1.count != arg2.count)
+            return false;
+        
+        for (var i = 0; i < arg1.count; ++i) {
+            if (!_equalStructStub(arg1[i], arg2[i]))
+                return false;
+        }
+
+        return true;
+    }  else if (arg1 instanceof "Dictionary" && arg2 instanceof "Dictionary") {
+        var key1 = Scripts.getObjectKeys(arg1);
+        var key2 = Scripts.getObjectKeys(arg2);
+
+        if (key1.count != key2.count)
+            return false;
+        
+        for (var i = 0; i < key1.count; ++i) {
+            if (typeof arg2[key1[i]] === void)
+                return false;
+            if (!_equalStructStub(arg1[key1[i]], arg2[key1[i]]))
+                return false;
+        }
+
+        return true;
+    }
+
+    return arg1 == arg2;
+}
+
+if (typeof global.Scripts.foreach === "undefined") {
+    global.Scripts.foreach = _forEachStub;
+}
+
+if (typeof global.Scripts.clone === "undefined") {
+    global.Scripts.clone = _cloneStub;
+}
+
+if (typeof global.Scripts.equalStruct === "undefined") {
+    global.Scripts.equalStruct = _equalStructStub;
+}

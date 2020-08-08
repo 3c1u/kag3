@@ -1,0 +1,20 @@
+﻿/**
+ * @file     Main.tjs
+ * @author   Hikaru Terazono <3c1u@vulpesgames.tokyo>
+ * @brief    Patch for Otome*Domain.
+ *
+ * @copyright Copyright (c) 2020 Hikaru Terazono (3c1u).
+ */
+
+Scripts.execStorage("patch/MenuItem.tjs");
+Scripts.execStorage("patch/ScriptsEx.tjs");
+
+function _addFontStub(arg1, arg2) {
+    Font.addFont(arg1, arg2);
+}
+function _getNotificationNumStub() {}
+function _setMessageHookStub(arg1, arg2) {}
+
+System.addFont = _addFontStub;
+global.Window.getNotificationNum = _getNotificationNumStub;
+global.Window.setMessageHook = _setMessageHookStub;
